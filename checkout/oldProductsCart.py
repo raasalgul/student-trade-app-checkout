@@ -1,0 +1,1 @@
+# Directly load the payment UI page and call the payment microservice from the UI

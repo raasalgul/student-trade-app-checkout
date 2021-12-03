@@ -51,3 +51,4 @@ def queueUtilities(table_name,hash_table_name,queue_name,request):
         # logging.log("New User added to the Dynamo Db")
     except ClientError as e:
         logging.error(e)
+    return response

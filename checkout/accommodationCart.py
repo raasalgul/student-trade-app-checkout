@@ -2,8 +2,9 @@ from checkout import app
 import boto3
 import os
 from dotenv import load_dotenv
-from Utilities import queueUtilities
 from flask import request
+
+from checkout.utilities import queueUtilities
 
 ''' Loading Environment files '''
 load_dotenv()
