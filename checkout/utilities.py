@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 sqs_client = boto3.client(os.getenv("AWS_SQS"), region_name=os.getenv("AWS_REGION"))
 
 
-def queueUtilities(table_name,hash_table_name,queue_name,request):
+def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
     dynamoDbResource = boto3.resource(os.getenv("AWS_DYNAMO"), region_name=os.getenv("AWS_REGION"))
     try:
         response = {}
@@ -40,7 +40,8 @@ def queueUtilities(table_name,hash_table_name,queue_name,request):
         queueMsg = {"sendEmail": request.json['email'],
                     "toEmail": receiverEmail,
                     "emailBody": request.json['emailBody'],
-                    "productName": request.json['name']
+                    "productName": request.json['name'],
+                    "catagory": catagory
                     }
         # retrive the URL of an existing Amazon SQS queue
         response = sqs_client.get_queue_url(QueueName=queue_name)

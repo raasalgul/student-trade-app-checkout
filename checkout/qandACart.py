@@ -26,6 +26,6 @@ along with the email id and email body of the sender.
 @app.route('/qAndA-cart', methods=['POST'])
 def addQAndACart():
     # logging.log("addAccommodation() request is "+json.dumps(request.get_json()))
-    response=queueUtilities(table_name,hash_table_name,queue_name,request)
+    response=queueUtilities(table_name,hash_table_name,queue_name,request,"Q and A")
 
     return response
