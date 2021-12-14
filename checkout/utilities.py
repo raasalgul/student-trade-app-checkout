@@ -62,7 +62,7 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
         # response = sqs_client.send_message(QueueUrl=queue_url, MessageBody=json.dumps(queueMsg))
         # # logging.log("New User added to the Dynamo Db")
         response = requests.post('https://uos8mod855.execute-api.us-east-1.amazonaws.com/prod/notificationLambda',
-                                 json=queueMsg)
+                                 json={"to":receiverEmail,"subject":catagory,"message":msg})
         logging.info("api gateway response {}".format(response))
     except ClientError as e:
         logging.error(e)
