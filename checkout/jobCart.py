@@ -1,4 +1,4 @@
-from checkout import app
+from checkout import application
 import boto3
 import os
 from dotenv import load_dotenv
@@ -23,7 +23,7 @@ along with the email id and email body of the sender.
 '''
 
 
-@app.route('/job-cart', methods=['POST'])
+@application.route('/job-cart', methods=['POST'])
 def addJobCart():
     # logging.log("addAccommodation() request is "+json.dumps(request.get_json()))
     response=queueUtilities(table_name,hash_table_name,queue_name,request,"Job")

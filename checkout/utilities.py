@@ -6,6 +6,10 @@ from boto3.dynamodb.conditions import Key
 import os
 import json
 from dotenv import load_dotenv
+
+''' Loading Environment files '''
+load_dotenv()
+
 sqs_client = boto3.client(os.getenv("AWS_SQS"), region_name=os.getenv("AWS_REGION"))
 
 
