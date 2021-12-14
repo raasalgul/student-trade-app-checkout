@@ -6,6 +6,7 @@ from boto3.dynamodb.conditions import Key
 import os
 import json
 from dotenv import load_dotenv
+import requests
 
 ''' Loading Environment files '''
 load_dotenv()
@@ -42,18 +43,27 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
 
         # logging.log("Table is connected")
         queueMsg = {"sendEmail": request.json['email'],
-                    "toEmail": receiverEmail,
-                    "emailBody": request.json['emailBody'],
+                    "to": receiverEmail,
+                    "message": request.json['emailBody'],
                     "productName": request.json['name'],
-                    "catagory": catagory
+                    "category": catagory
                     }
-        # retrive the URL of an existing Amazon SQS queue
-        response = sqs_client.get_queue_url(QueueName=queue_name)
-        queue_url = response['QueueUrl']
 
-        print('\nmessage to send to the queue', queueMsg, '...\n')
-        response = sqs_client.send_message(QueueUrl=queue_url, MessageBody=json.dumps(queueMsg))
-        # logging.log("New User added to the Dynamo Db")
+        msg = "Hi, " \
+              "This email is from student trade app's \"{0}\" category." \
+              "For the product name \"{1}\" has received this following email " \
+              "\"{2}\". If you want to proceed with it please contact {3}".format(catagory,queueMsg['category'],
+                                                                                  queueMsg['message'],queueMsg['sendEmail'])
+        # retrive the URL of an existing Amazon SQS queue
+        # response = sqs_client.get_queue_url(QueueName=queue_name)
+        # queue_url = response['QueueUrl']
+        #
+        # print('\nmessage to send to the queue', queueMsg, '...\n')
+        # response = sqs_client.send_message(QueueUrl=queue_url, MessageBody=json.dumps(queueMsg))
+        # # logging.log("New User added to the Dynamo Db")
+        response = requests.post('https://uos8mod855.execute-api.us-east-1.amazonaws.com/prod/notificationLambda',
+                                 json=queueMsg)
+        logging.info("api gateway response {}".format(response))
     except ClientError as e:
         logging.error(e)
     return response
