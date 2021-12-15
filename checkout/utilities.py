@@ -4,14 +4,15 @@ import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 import os
-import json
+from datetime import datetime
 from dotenv import load_dotenv
 import requests
+import hashlib
 
 ''' Loading Environment files '''
 load_dotenv()
 
-sqs_client = boto3.client(os.getenv("AWS_SQS"), region_name=os.getenv("AWS_REGION"))
+# sqs_client = boto3.client(os.getenv("AWS_SQS"), region_name=os.getenv("AWS_REGION"))
 
 
 def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
@@ -49,11 +50,20 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
                     "category": catagory
                     }
 
-        msg = "Hi, " \
-              "This email is from student trade app's \"{0}\" category." \
+        feedMsg = {
+            "transaction":catagory,
+            "to":receiverName,
+            "time":datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+                }
+
+        feedData = {}
+
+        msg = "Hi\n, " \
+              "This email is from student trade app's \"{0}\" category.\n" \
               "For the product name \"{1}\" has received this following email " \
-              "\"{2}\". If you want to proceed with it please contact {3}".format(catagory,queueMsg['category'],
-                                                                                  queueMsg['message'],queueMsg['sendEmail'])
+              "\"{2}\". If you want to proceed with it please contact {3} \n Thank You".format(catagory,queueMsg['productName'],
+              receiverName,queueMsg['sendEmail'])
+
         # retrive the URL of an existing Amazon SQS queue
         # response = sqs_client.get_queue_url(QueueName=queue_name)
         # queue_url = response['QueueUrl']
@@ -64,6 +74,16 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
         response = requests.post('https://uos8mod855.execute-api.us-east-1.amazonaws.com/prod/notificationLambda',
                                  json={"to":receiverEmail,"subject":catagory,"message":msg})
         logging.info("api gateway response {}".format(response))
+        table = dynamoDbResource.Table(os.getenv("DYNAMO_FEED_TABLE"))
+        strToHash = feedMsg.get("to") + feedMsg.get("time")
+        hash = hashlib.sha224(strToHash.encode())
+        feedData['hash'] = hash.hexdigest()
+        feedData['addedDate'] = feedMsg.get("time")
+        feedData['data'] = feedMsg
+        feedData['isTrue'] = "true"
+        response = table.put_item(Item=feedData)
+        logging.info("Feed table response {}".format(response))
     except ClientError as e:
         logging.error(e)
-    return response
+        return {"status":e}
+    return {"status":"Sucess"}
