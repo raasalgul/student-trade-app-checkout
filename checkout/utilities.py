@@ -62,7 +62,7 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
               "This email is from student trade app's \"{0}\" category.\n" \
               "For the product name \"{1}\" has received this following email " \
               "\"{2}\". If you want to proceed with it please contact {3} \n Thank You".format(catagory,queueMsg['productName'],
-              receiverName,queueMsg['sendEmail'])
+              queueMsg['message'],queueMsg['sendEmail'])
 
         # retrive the URL of an existing Amazon SQS queue
         # response = sqs_client.get_queue_url(QueueName=queue_name)
