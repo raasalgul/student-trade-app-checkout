@@ -48,7 +48,7 @@ def oldProduct():
                                        Key("name").eq(receiverName))
         res = {
             "productHash": request.json['hash'],
-            "requesterEmail": receiverEmail,
+            "requesterEmail": request.json['email'],
             "productName": receiverName,
             "cost":dbResponse['Items'][0]['price']
 
