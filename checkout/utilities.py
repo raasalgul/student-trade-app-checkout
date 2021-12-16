@@ -38,9 +38,9 @@ def queueUtilities(table_name,hash_table_name,queue_name,request,catagory):
                 receiverEmail = responseHashTable['Items'][0]['email']
                 receiverName = responseHashTable['Items'][0]['name']
 
-        dbResponse = table.query(
-            KeyConditionExpression=Key("email").eq(receiverEmail) &
-                                   Key("name").eq(receiverName))
+        # dbResponse = table.query(
+        #     KeyConditionExpression=Key("email").eq(receiverEmail) &
+        #                            Key("name").eq(receiverName))
 
         # logging.log("Table is connected")
         queueMsg = {"sendEmail": request.json['email'],
